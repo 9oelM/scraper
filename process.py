@@ -1,3 +1,6 @@
+from __future__ import print_function # Python 2/3 compatibility
+from decimal import Decimal
+import boto3
 import json
 import requests 
 
@@ -21,6 +24,10 @@ def getIdAndType(data):
     return processed
 
 def getSubInfo(data, step):
+    dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
+
+    table = dynamodb.Table('houseData')
+    
     detailedItemURL = 'https://apis.zigbang.com/v3/items'
     detailedItemURLPayload = {'detail':'true', 'item_ids': ''}
     # the number of data to be processed usually reaches up to ~30000 
@@ -48,7 +55,12 @@ def getSubInfo(data, step):
                     room.update({
                         subinfo: itemDetail[subinfo]
                     })
+                room = json.dumps(room)
+                table.put_item(
+                    Item=json.loads(room, parse_float = Decimal)
+                )
                 result.append(room)
+                print(room)
                 
             # reset
             detailedItemURLPayload['item_ids'] = ''
