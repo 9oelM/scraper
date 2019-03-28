@@ -1,9 +1,10 @@
 import json
 import requests 
 from process import getIdAndType, getSubInfo, toJson, saveJson
+from typing import Callable, Dict, Any
 from util import compose
 
-def crawlerMainJob(*params):
+def crawlerMainJob(*params) -> Callable:
     return compose(
         lambda data : saveJson('./result.json', data),
         lambda data : getSubInfo(data, 650),
@@ -12,7 +13,7 @@ def crawlerMainJob(*params):
         requests.get,
     )(*params)
 
-def crawler(event, context):
+def crawler(event : Dict, context : Any) -> None:
     itemURL = 'https://apis.zigbang.com/v3/items2'
     itemURLPayload = {}
     if event['test']:
@@ -31,4 +32,4 @@ def crawler(event, context):
     crawlerMainJob(itemURL, itemURLPayload)
     
 if __name__ == "__main__":
-    crawler({'test': False},1)
+    crawler({'test': True},1)
