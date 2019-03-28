@@ -1,4 +1,12 @@
 # Scraper
+- Scrapes data on flats in Seoul from [Zigbang](https://www.zigbang.com/)
+- Modified from the master branch to enable local scraping instead of on AWS lambda. 
+
+## Usage
+```
+python3 handler.py
+```
+
 ## Setup
 0. Make sure you are using `python3.6+` and a decent `pip`
     ```bash
@@ -28,7 +36,7 @@
     npm install 
     ```
 
-## Deploy 
+## Deploy (for master branch)
 ```
 pipenv run pip freeze > requirements.txt && sls deploy
 ```
