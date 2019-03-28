@@ -1,19 +1,21 @@
 import json
 import requests 
+from util import getNumbers 
+from typing import Any, Dict, List
 
-def getJson(file):
+def getJson(file : str) -> Dict[str, Any]:
     with open(file) as f:
         data = json.load(f)
     return data
 
-def toJson(response):
+def toJson(response : Dict[str, Any]) -> List[int]:
     return response.json()
 
-def saveJson(file, data):
+def saveJson(file : str, data : Dict[str, Any]) -> None:
     with open(file, 'w') as outfile:
         json.dump(data, outfile)
 
-def getIdAndType(data):
+def getIdAndType(data : List) -> List:
     processed = []
     print('Total items requested: %d' %(len(data['list_items'])))
     for room in enumerate(data['list_items']):
@@ -24,11 +26,22 @@ def getIdAndType(data):
         )
     return processed
 
-def getSubInfo(data, step):
+def getSelectiveValues(itemDetail : List[any]) -> Dict[str, Any]:
+    info = ['local2', 'local3', 'agent_lat', 'agent_lng', 'deposit', 'rent', 'manage_cost', 'floor', 'floor_all', 'building_type', 'near_subways', 'options', 'parking', 'room_type', 'size_m2', 'id', 'is_premium']
+    room = {}
+    for subinfo in info:
+        if subinfo in ['manage_cost', 'floor', 'floor_all']:
+            itemDetail[subinfo] = getNumbers(itemDetail[subinfo])
+        room.update({
+            subinfo: itemDetail[subinfo]
+        })
+    return room
+
+def getSubInfo(data : List, step : int) -> Dict[str, Any]:
     detailedItemURL = 'https://apis.zigbang.com/v3/items'
     detailedItemURLPayload = {'detail':'true', 'item_ids': ''}
     # the number of data to be processed usually reaches up to ~30000 
-    # divide the requests into each with 500 items
+    # divide the requests into each with 650 items
     
     result = []
     for counter, piece in enumerate(data):
@@ -45,13 +58,7 @@ def getSubInfo(data, step):
             
             for idx, item in enumerate(resp.json()['items']):
                 itemDetail = item['item']
-                info = ['local2', 'local3', 'agent_lat', 'agent_lng', 'deposit', 'rent', 'manage_cost', 'floor', 'floor_all', 'building_type', 'near_subways', 'options', 'parking', 'room_type', 'size_m2', 'id', 'is_premium']
-                
-                room = {}
-                for subinfo in info:
-                    room.update({
-                        subinfo: itemDetail[subinfo]
-                    })
+                room = getSelectiveValues(itemDetail)
                 result.append(room)
                 
             # reset
