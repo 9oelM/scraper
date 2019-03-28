@@ -36,7 +36,7 @@ python3 handler.py
     npm install 
     ```
 
-## Deploy (for other branches)
+## Deploy (for master branch)
 ```
 pipenv run pip freeze > requirements.txt && sls deploy
 ```
