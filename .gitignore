@@ -21,3 +21,4 @@ node_modules
 # Serverless directories
 .serverless
 .~c9*
+result.json
